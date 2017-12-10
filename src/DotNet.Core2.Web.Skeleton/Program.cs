@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using DotNet.Core2.Web.Skeleton.Models;
 using Newtonsoft.Json;
 using System.Linq;
+using DotNet.Core2.Web.Skeleton.Code;
+using Newtonsoft.Json.Converters;
 
 namespace DotNet.Core2.Web.Skeleton
 {
@@ -15,8 +17,6 @@ namespace DotNet.Core2.Web.Skeleton
 
         public static void Main(string[] args)
         {
-
-
 
 
             IConfigurationRoot config;
@@ -41,6 +41,24 @@ namespace DotNet.Core2.Web.Skeleton
                 JsonSerializer serializer = new JsonSerializer();
                 AdminUsrList = (List<AdminUser>)serializer.Deserialize(file, typeof(List<AdminUser>));
             }
+
+
+            string dataFile  = baseDir + Path.DirectorySeparatorChar + "config" + Path.DirectorySeparatorChar + "UserDataItems.json";
+
+           
+
+            using (StreamReader fileData = File.OpenText(dataFile))
+            {
+
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.DateFormatString = "yyyy-MM-dd HH:mm:ss";
+                List< UserDataItem> listData = (List<UserDataItem>)serializer.Deserialize(fileData, typeof(List<UserDataItem>));
+                foreach (var item in listData)
+                {
+                    DataCache.UserDataCache.Add(item);
+                }
+            }
+
 
 
 
