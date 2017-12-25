@@ -45,6 +45,14 @@ namespace DotNet.Core2.Web.Skeleton
                 options.LogoutPath = "/Account/Login";
             });
 
+		    services.AddDataProtection(opts =>
+           {
+             opts.ApplicationDiscriminator = "MyAppName.web";
+           });
+
+            services.AddAntiforgery(options => options.HeaderName = "X-XSRF-TOKEN");
+			
+			
             services.AddMvcCore().
                      AddDataAnnotations().
                      AddJsonFormatters();
