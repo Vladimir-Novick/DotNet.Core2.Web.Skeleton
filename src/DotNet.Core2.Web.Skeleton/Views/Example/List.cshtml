@@ -50,7 +50,10 @@
 
             actions: {
                 refreshRowAction: '/ExampleAJax/GetKeyList',
-                listAction: '/ExampleAJax/GetKeyList'
+                listAction: '/ExampleAJax/GetKeyList',
+                deleteAction: '/ExampleAJax/DeleteKey',
+                updateAction: '/ExampleAJax/UpdateKey',
+                createAction: '/ExampleAJax/CreateKey")'
             },
             fields: {
 
@@ -69,7 +72,10 @@
                     title: 'Key',
                     key: true,
                     sorting: true,
-                    width: '100%'
+                    create: true,
+                    edit: true,
+                    width: '100%',
+                    defaultValue:'default value'
                 }
                 ,
                 IntData: {

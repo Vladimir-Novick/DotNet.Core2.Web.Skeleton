@@ -9,5 +9,10 @@ Table View:
 
 ![Recaptcha Options](https://raw.githubusercontent.com/Vladimir-Novick/DotNet.Core2.Web.Skeleton/master/images/table_view.png)
 
+  "username": "user",
+  "password": "user"
+  
+  please look file: config > admin_users.json
+
 
 
