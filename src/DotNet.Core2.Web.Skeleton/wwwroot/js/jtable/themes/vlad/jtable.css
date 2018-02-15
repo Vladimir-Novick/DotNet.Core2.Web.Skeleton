@@ -34,30 +34,6 @@
     src: local("Open Sans Semibold"), local("OpenSans-Semibold"), url("http://themes.googleusercontent.com/static/fonts/opensans/v6/MTP_ySUJH_bn48VBG8sNSha1RVmPjeKy21_GQJaLlJI.woff") format("woff");
 }
 
-.ui-dialog {
-    z-index: 100;
-}
-
-.jtable-text-input {
-    color:black;
-}
-
-.jtable-toolbar-item-add-record {
-    cursor: pointer;
-    font-size: 18px;
-    font-weight: 600;
-    background: url(./bookmark.png) no-repeat scroll 0 0 transparent;
-    height: 16px;
-    margin-left:16px;
-}
-
-
-
-.ui-dialog .ui-dialog-buttonpane button {
-    color: black;
-}
-
-
 @font-face {
     font-family: "Open Sans";
     font-style: italic;
@@ -101,6 +77,12 @@ div.jtable-main-container div.jtable-title .jtable-close-button {
     position: absolute;
     right: 0;
     top: 0;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+    background-image: url('./close.png');
+    overflow: hidden;
+    font-size: 0;
 }
 
 div.jtable-main-container table.jtable {
@@ -165,8 +147,7 @@ div.jtable-main-container table.jtable {
         border: medium none;
         cursor: pointer;
         display: inline;
-        width:32px;
-        height:32px;
+
     }
 
         div.jtable-main-container table.jtable tbody tr > td .jtable-command-button span {
@@ -314,11 +295,6 @@ form.jtable-dialog-form div.jtable-input {
     padding: 2px;
 }
 
-form.jtable-dialog-form div.jtable-date-input {
-}
-
-form.jtable-dialog-form div.jtable-text-input {
-}
 
 form.jtable-dialog-form span.jtable-option-text-clickable {
     position: relative;
@@ -711,8 +687,6 @@ div.jtable-main-container table.jtable tbody tr.jtable-no-data-row-chield2 {
 
 /*                  -----------------------------     */
 
-div.jtable-main-container > table.jtable > tbody > tr.jtable-row-even2 {
-}
 
 div.jtable-main-container > table.jtable > tbody > tr.jtable-row-even {
     background-color: #f2f5f7;
@@ -723,7 +697,7 @@ div.jtable-main-container > table.jtable > tbody > tr.jtable-data-row:hover {
 }
 
 div.jtable-main-container > table.jtable > tbody > tr.jtable-row-selected {
-    background-color: #929292;
+    background-color: #d8eaf1;
     color: #FFFFFF;
 }
 
@@ -1169,3 +1143,44 @@ form.jtable-dialog-form div.jtable-textarea-input textarea.eMailBodyClass {
 .jtable-column-button:hover {
     opacity: 1;
 }
+
+.jtable-column-tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+}
+
+    .jtable-column-tooltip .jtable-column-tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: #555;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        z-index: 1;
+        bottom: 125%;
+        left: 50%;
+        margin-left: -60px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        z-index:100;
+    }
+
+        .jtable-column-tooltip .jtable-column-tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+    .jtable-column-tooltip:hover .jtable-column-tooltiptext {
+        visibility: visible;
+        opacity: 1;
+        z-index:100;
+    }

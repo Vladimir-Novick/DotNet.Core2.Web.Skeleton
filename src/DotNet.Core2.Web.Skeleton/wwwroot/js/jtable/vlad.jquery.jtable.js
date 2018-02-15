@@ -28,34 +28,25 @@ THE SOFTWARE.
 */
 
 /*
-  Modified : 2017 by Vladimir Novick http://www.linkedin.com/in/vladimirnovick
 
+
+ Modified : 2017,2018 by Vladimir Novick http://www.linkedin.com/in/vladimirnovick
  New Options:
-
     Refresh page button
-
     data type : number
-
     action:
-
             refreshRowAction   - create refresh row button and define refresh row action
-
                                       for example :
                                              actions: {
                                                    refreshRowAction: '/StatusQuery/RefreshRow',
                                                    listAction: '/StatusQuery/GetQueList'
-
-
            customRowOperation -  custom javascript action to table tr
-
                                        for example :
                                              actions: {
                                                    refreshRowAction: '/StatusQuery/RefreshRow',
                                                    listAction: '/StatusQuery/GetQueList',
                                                    customRowOperation: makeRowCSS  //  where makeRowCSS(table_tr_object) - javascript function
-
             customShowInfo     - custom show page message
-
                                  for example :
                                              actions: {
                                                    refreshRowAction: '/StatusQuery/RefreshRow',
@@ -63,13 +54,57 @@ THE SOFTWARE.
                                                    customRowOperation: makeRowCSS,  //  where makeRowCSS(table_tr_object) - javascript function
                                                    customShowInfo: showPageInfo  //  where showPageInfo(stringMessage) - javascript function
 
+     Table Options:
+
+      define table container  : tableContainerClass
+
+            example:
+                 $('#ActivitiesTableContainer').jtable('openChildTable',
+                                                        $img.closest('tr'),
+                                                        {
+                                                            title: 'Changes History:' ,
+                                                            paging: true,
+                                                            pageSize: 20,
+                                                            sorting: true,
+                                                            tableContainerClass:'MyRulesHistory',
+                                                            defaultSorting: 'city_code ASC',
+
+            where MyRulesHistory - css class like here:
+                  <style>
+
+                     .MyRulesHistory {
+                           float:right;
+                           width:550px !important;
+                      }
+
+                     div.MyRulesHistory table.jtable thead th {
+                           background-color:#8f9b9b;
+                      }
+
+                  </style>
 
 
 */
 
+
+
+
+
+
 /************************************************************************
 * CORE jTable module                                                    *
 *************************************************************************/
+
+	
+function isNumberKey(evt){
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode > 31 && (charCode < 48 || charCode > 57))
+        return false;
+    return true;
+}
+
+
+
 (function ($) {
 
     var unloadingPage;
@@ -80,6 +115,8 @@ THE SOFTWARE.
     $(window).on('unload', function () {
         unloadingPage = false;
     });
+	
+	
 
     $.widget("hik.jtable", {
 
@@ -302,6 +339,8 @@ THE SOFTWARE.
             self._$titleDiv = $titleDiv;
         },
 
+
+
         /* Creates the table.
         *************************************************************************/
         _createTable: function () {
@@ -317,6 +356,7 @@ THE SOFTWARE.
 
             this._createTableHead();
             this._createTableBody();
+
         },
 
         /* Creates header (all column headers) of the table.
@@ -355,20 +395,33 @@ THE SOFTWARE.
             field.width = field.width || '10%'; //default column width: 10%.
 
             var $headerTextSpan = $('<span />')
-                .addClass('jtable-column-header-text')
-                .html(field.title);
+                 .html(field.title);
+
+            $headerTextSpan.addClass('jtable-column-header-text')
 
             var $headerContainerDiv = $('<div />')
                 .addClass('jtable-column-header-container')
                 .append($headerTextSpan);
 
+            if (field.tooltip) {
+                $headerContainerDiv.addClass('jtable-column-tooltip');
+                var $headerTooltipSpan = $('<span />')
+                    .addClass('jtable-column-tooltiptext')
+                    .html(field.tooltip);
+                $headerContainerDiv.append($headerTooltipSpan);
+
+            }
+
             var $th = $('<th></th>')
                 .addClass('jtable-column-header')
+               
                 .addClass(field.listClass)
                 .css('width', field.width)
                 .data('fieldWidth', field.width)
                 .data('fieldName', fieldName)
                 .append($headerContainerDiv);
+
+
 
             this._jqueryuiThemeAddClass($th, 'ui-state-default');
 
@@ -563,9 +616,7 @@ THE SOFTWARE.
                 .data('record', record);
 
             this._addCellsToRowUsingRecord($tr);
-            if (this.options.actions.customRowOperation) {
-                this.options.actions.customRowOperation($tr)
-            }
+
             return $tr;
         },
 
@@ -582,17 +633,14 @@ THE SOFTWARE.
         /* Create a cell for given field.
         *************************************************************************/
         _createCellForRecordField: function (record, fieldName) {
-           var f = $('<td></td>')
+            return $('<td></td>')
                 .addClass(this.options.fields[fieldName].listClass)
                 .append((this._getDisplayTextForRecordField(record, fieldName)));
-            var field = this.options.fields[fieldName];
-
-            if (field.type === 'number') {
-                f.css('text-align', 'right');
-            }
-            return f;
         },
 
+        RefrehRow: function () {
+            alert("OK");
+        },
 
         /* Adds a list of records to the table.
         *************************************************************************/
@@ -1613,6 +1661,8 @@ THE SOFTWARE.
                 return this._createPasswordInputForField(field, fieldName, value);
             } else if (field.type == 'checkbox') {
                 return this._createCheckboxForField(field, fieldName, value);
+            } else if (field.type == 'number') {
+                return this._createOnlyNumberInputForField(field, fieldName, value);
             } else if (field.options) {
                 if (field.type == 'radiobutton') {
                     return this._createRadioButtonListForField(field, fieldName, value, record, formType);
@@ -1674,6 +1724,21 @@ THE SOFTWARE.
                 .addClass('jtable-input jtable-text-input')
                 .append($input);
         },
+		
+		/* Creates a textbox for a field only number.
+        *************************************************************************/
+        _createOnlyNumberInputForField: function (field, fieldName, value) {
+            var $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName 
+			+ '" type="text" name="' 
+			+ fieldName + '"  onkeypress=\'return isNumberKey(event)\'  ></input>');
+            if (value != undefined) {
+                $input.val(value);
+            }
+            
+            return $('<div />')
+                .addClass('jtable-input jtable-text-input')
+                .append($input);
+        },
 
         /* Creates a password input for a field.
         *************************************************************************/
@@ -1687,6 +1752,8 @@ THE SOFTWARE.
                 .addClass('jtable-input jtable-password-input')
                 .append($input);
         },
+		
+		
 
         /* Creates a checkboxfor a field.
         *************************************************************************/
@@ -2934,13 +3001,6 @@ THE SOFTWARE.
             var $columns = $tableRow.find('td');
             for (var i = 0; i < this._columnList.length; i++) {
                 var displayItem = this._getDisplayTextForRecordField(record, this._columnList[i]);
-
-                var fieldName = this._columnList[i];
-                var field = this.options.fields[fieldName];
-
-                if (field.type === 'number') {
-                    $columns.eq(this._firstDataColumnOffset + i).css('text-align', 'right');
-                }
            //     if ((displayItem != "") && (displayItem == 0)) displayItem = "0";
                 $columns.eq(this._firstDataColumnOffset + i).html(displayItem || '');
             }
@@ -3820,8 +3880,8 @@ THE SOFTWARE.
         options: {
             paging: false,
             pageList: 'normal', //possible values: 'minimal', 'normal'
-            pageSize: 10,
-            pageSizes: [10, 25, 50, 100, 250, 500],
+            pageSize: 15,
+            pageSizes: [10,15,20, 25,30,40, 50, 100, 250, 500],
             pageSizeChangeArea: true,
             gotoPageArea: 'combobox', //possible values: 'textbox', 'combobox', 'none'
 
@@ -4355,9 +4415,6 @@ THE SOFTWARE.
         _createPagingInfo: function () {
             if (this._totalRecordCount <= 0) {
                 this._$pageInfoSpan.empty();
-                if (this.options.actions.customShowInfo) {
-                    this.options.actions.customShowInfo("");
-                }
                 return;
             }
 
@@ -4368,9 +4425,6 @@ THE SOFTWARE.
             if (endNo >= startNo) {
                 var pagingInfoMessage = this._formatString(this.options.messages.pagingInfo, startNo, endNo, this._totalRecordCount);
                 this._$pageInfoSpan.html(pagingInfoMessage);
-                if (this.options.actions.customShowInfo) {
-                    this.options.actions.customShowInfo(pagingInfoMessage);
-                }
             }
         },
 
@@ -5159,8 +5213,14 @@ THE SOFTWARE.
             self.closeChildTable($row, function () {
                 var $childRowColumn = self.getChildRow($row).children('td').empty();
                 var $childTableContainer = $('<div />')
-                    .addClass('jtable-child-table-container')
-                    .appendTo($childRowColumn);
+                    .addClass('jtable-child-table-container');
+
+                if (tableOptions.tableContainerClass) {
+                    $childTableContainer.addClass(tableOptions.tableContainerClass);
+                }
+
+
+                   $childTableContainer.appendTo($childRowColumn);
                 $childRowColumn.data('childTable', $childTableContainer);
                 $childTableContainer.jtable(tableOptions);
                 self.openChildRow($row);
