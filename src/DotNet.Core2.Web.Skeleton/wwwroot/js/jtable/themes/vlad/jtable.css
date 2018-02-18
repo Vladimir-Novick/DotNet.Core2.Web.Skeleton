@@ -1184,3 +1184,241 @@ form.jtable-dialog-form div.jtable-textarea-input textarea.eMailBodyClass {
         opacity: 1;
         z-index:100;
     }
+
+.child-opener-image {
+    cursor: pointer;
+}
+
+.child-opener-image-column {
+    text-align: center;
+}
+
+.align-right-column {
+    text-align: right;
+}
+
+.align-center-column {
+    text-align: center;
+}
+
+.bold-column {
+    font-weight: 600 !important;
+}
+
+.jtable-dialog-form {
+    min-width: 220px;
+}
+
+
+
+th.jtable-column-header {
+    height: 50px !important;
+}
+
+div.jtable-column-header-container {
+    height: auto !important;
+    margin-left: 0px !important;
+}
+
+.jtable-column-header-text {
+    white-space: normal !important;
+    text-align: center !important;
+}
+
+
+span.jtable-column-header-text {
+    margin-top: 0px !important;
+    display: block !important;
+}
+
+
+.container {
+    width: 100% !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
+.jtable-child-table-container > table.jtable > thead {
+    background-color: #366f86;
+}
+
+
+.jtable-column-header-text {
+    white-space: normal !important;
+    color: white !important;
+}
+
+
+.align-right-column-price {
+    text-align: right;
+    font-weight: 600 !important;
+    color: #a94442 !important;
+}
+
+.align-right-column-price-prev {
+    text-align: center;
+    font-weight: 600 !important;
+    color: teal !important;
+}
+
+
+.refresh_Panel {
+    width: 100%;
+    height: 32px;
+    margin-top: 15px;
+}
+
+.nav > li {
+    margin-right: 20px !important;
+}
+
+div.jtable-input {
+    padding: 2px;
+    color: black !important;
+}
+
+.seach_btn {
+    height: 20px;
+    cursor: pointer;
+}
+
+.refresh_Panel img {
+    float: right;
+    cursor: pointer;
+}
+
+
+.child-opener-image {
+    cursor: pointer;
+    opacity: 0.4;
+}
+
+    .child-opener-image :hover {
+        opacity: 1;
+    }
+
+
+
+
+
+
+.ui-dialog > .ui-button {
+    color: black;
+}
+
+.ui-dialog-buttonpane {
+    color: black !important;
+}
+
+
+
+
+.child-opener-image-column {
+    text-align: center;
+}
+
+
+
+#jtable-dialog-form {
+    display: table !important;
+}
+
+
+
+div.jtable-input-field-container {
+    display: table-row !important;
+    width: auto !important;
+    height: auto;
+}
+
+.jtable-input-label {
+    display: table-column;
+    width: 120px !important;
+    color: antiquewhite !important;
+    background-color: darkslategray;
+    float: left;
+}
+
+.ui-dialog {
+    z-index: 1 !important;
+}
+
+
+.jtable-text-input {
+    display: table-column;
+    padding-top: 5px !important;
+    color: black;
+    float: left !important;
+}
+
+.jtable-toolbar-item-add-record {
+    cursor: pointer !important;
+    font-size: 19px;
+    font-weight: 500;
+    padding-left: 20px;
+    background-image: url('./add.png');
+    background-repeat: no-repeat;
+}
+
+
+
+    .jtable-toolbar-item-add-record > .jtable-toolbar-item-icon > .jtable-toolbar-item-text {
+        margin-left: 22px;
+    }
+
+.form_my_account_readonly {
+    min-width: 300px !important;
+    background-color: #e1e0d8;
+}
+
+.form_my_account_mandatory {
+    min-width: 300px !important;
+    background-color: rgb(255, 250, 193);
+}
+
+
+.form_my_account_edit {
+    min-width: 300px !important;
+}
+
+.form_my_account-label {
+    display: table-column;
+    width: 150px !important;
+    color: antiquewhite !important;
+    background-color: darkslategray;
+    float: left;
+    margin-top: 5px;
+    font-size: 1.1em;
+    padding: 2px 3px;
+}
+
+.form_my_account-field-container {
+    display: table-row !important;
+    width: auto !important;
+    height: auto;
+    border-bottom: 1px solid #DDDDDD;
+    padding: 2px 0 3px;
+}
+
+.form_my_account-text-input {
+    float: left;
+    display: table-column;
+    width: 300px;
+}
+
+.HighlightedDate a {
+    background-color: teal !important;
+    background-image: none !important;
+    color: White !important;
+    font-weight: bold !important;
+    font-size: 12pt;
+}
+
+.Highlighted a.ui-state-default {
+    background-color: #168e8e !important;
+    background-image: none !important;
+    color: White !important;
+    font-weight: bold !important;
+    font-size: 9pt;
+}
+
