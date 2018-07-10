@@ -28,25 +28,36 @@ THE SOFTWARE.
 */
 
 /*
-
-
- Modified : 2017,2018 by Vladimir Novick http://www.linkedin.com/in/vladimirnovick
+  Modified : 2014-2017/2018 by Vladimir Novick http://www.linkedin.com/in/vladimirnovick
+  
+  http://www.sgcombo.com
+  
  New Options:
+
     Refresh page button
+
     data type : number
+
     action:
+
             refreshRowAction   - create refresh row button and define refresh row action
+
                                       for example :
                                              actions: {
                                                    refreshRowAction: '/StatusQuery/RefreshRow',
                                                    listAction: '/StatusQuery/GetQueList'
-           customRowOperation -  custom javascript action to table tr
+
+
+           customRowOperation -  custom javascript action for table tr
+
                                        for example :
                                              actions: {
                                                    refreshRowAction: '/StatusQuery/RefreshRow',
                                                    listAction: '/StatusQuery/GetQueList',
                                                    customRowOperation: makeRowCSS  //  where makeRowCSS(table_tr_object) - javascript function
+
             customShowInfo     - custom show page message
+
                                  for example :
                                              actions: {
                                                    refreshRowAction: '/StatusQuery/RefreshRow',
@@ -54,57 +65,14 @@ THE SOFTWARE.
                                                    customRowOperation: makeRowCSS,  //  where makeRowCSS(table_tr_object) - javascript function
                                                    customShowInfo: showPageInfo  //  where showPageInfo(stringMessage) - javascript function
 
-     Table Options:
 
-      define table container  : tableContainerClass
-
-            example:
-                 $('#ActivitiesTableContainer').jtable('openChildTable',
-                                                        $img.closest('tr'),
-                                                        {
-                                                            title: 'Changes History:' ,
-                                                            paging: true,
-                                                            pageSize: 20,
-                                                            sorting: true,
-                                                            tableContainerClass:'MyRulesHistory',
-                                                            defaultSorting: 'city_code ASC',
-
-            where MyRulesHistory - css class like here:
-                  <style>
-
-                     .MyRulesHistory {
-                           float:right;
-                           width:550px !important;
-                      }
-
-                     div.MyRulesHistory table.jtable thead th {
-                           background-color:#8f9b9b;
-                      }
-
-                  </style>
 
 
 */
 
-
-
-
-
-
 /************************************************************************
 * CORE jTable module                                                    *
 *************************************************************************/
-
-	
-function isNumberKey(evt){
-    var charCode = (evt.which) ? evt.which : evt.keyCode;
-    if (charCode > 31 && (charCode < 48 || charCode > 57))
-        return false;
-    return true;
-}
-
-
-
 (function ($) {
 
     var unloadingPage;
@@ -115,8 +83,6 @@ function isNumberKey(evt){
     $(window).on('unload', function () {
         unloadingPage = false;
     });
-	
-	
 
     $.widget("hik.jtable", {
 
@@ -339,8 +305,6 @@ function isNumberKey(evt){
             self._$titleDiv = $titleDiv;
         },
 
-
-
         /* Creates the table.
         *************************************************************************/
         _createTable: function () {
@@ -356,7 +320,6 @@ function isNumberKey(evt){
 
             this._createTableHead();
             this._createTableBody();
-
         },
 
         /* Creates header (all column headers) of the table.
@@ -395,33 +358,20 @@ function isNumberKey(evt){
             field.width = field.width || '10%'; //default column width: 10%.
 
             var $headerTextSpan = $('<span />')
-                 .html(field.title);
-
-            $headerTextSpan.addClass('jtable-column-header-text')
+                .addClass('jtable-column-header-text')
+                .html(field.title);
 
             var $headerContainerDiv = $('<div />')
                 .addClass('jtable-column-header-container')
                 .append($headerTextSpan);
 
-            if (field.tooltip) {
-                $headerContainerDiv.addClass('jtable-column-tooltip');
-                var $headerTooltipSpan = $('<span />')
-                    .addClass('jtable-column-tooltiptext')
-                    .html(field.tooltip);
-                $headerContainerDiv.append($headerTooltipSpan);
-
-            }
-
             var $th = $('<th></th>')
                 .addClass('jtable-column-header')
-               
                 .addClass(field.listClass)
                 .css('width', field.width)
                 .data('fieldWidth', field.width)
                 .data('fieldName', fieldName)
                 .append($headerContainerDiv);
-
-
 
             this._jqueryuiThemeAddClass($th, 'ui-state-default');
 
@@ -491,6 +441,14 @@ function isNumberKey(evt){
         *************************************************************************/
         reload: function (completeCallback) {
             this._reloadTable(completeCallback);
+        },
+
+        data_refresh: function () {
+            this._data_refresh();
+        },
+
+        completeRefresh: function (data) {
+            this._completeRefresh(data);
         },
 
         /* Gets a jQuery row object according to given record key
@@ -593,10 +551,74 @@ function isNumberKey(evt){
             }
         },
 
+        _completeRefresh(data) {
+            var v = "";
+            var self = this;
+            for (var i = 0; i < data.Records.length; i++) {
+                var record = data.Records[i];
+                var tr_data = $("[data-record-key='" + record.ServiceID + "']"); 
+                if (tr_data.length > 0) {
+                    var tr = $(tr_data[0]);
+                    tr.data('record', record);
+                    self._updateCellsToRowUsingRecord(tr);
+                }
+            }
+        },
+
+
+        _updateCellsToRowUsingRecord: function (row) {
+            var record = row.data('record'); 
+               for (var i = 0; i < this._columnList.length; i++) {
+                   var column = this._columnList[i];
+                   var td_ = row.find("[data-field_name='" + column + "']");
+                   if (td_.length > 0) {
+                       var f = td_[0];
+                       let newText = record[column];
+                       if (typeof  newText !== 'undefined' && newText !== null) {
+                           if (f.innerHTML != newText) {
+                               f.innerHTML = newText;
+                           }
+                       }
+                      
+                   }
+   
+               }
+
+
+        },
+
+        _data_refresh() {
+            var self = this;
+            var loadUrl = self._createDataRefreshUrl();
+
+            //Load data from server using AJAX
+            self._ajax({
+                url: loadUrl,
+                data: self._lastPostData,
+                success: function (data) {
+                    self._completeRefresh(data);
+                },
+                error: function () {
+                    self._hideBusy();
+                    self._showError(self.options.messages.serverCommunicationError);
+                }
+            });
+        },
+
         /* Creates URL to load records.
         *************************************************************************/
         _createRecordLoadUrl: function () {
             return this.options.actions.listAction;
+        },
+
+        /*  Create link for data refrwsh options */
+        _createDataRefreshUrl: function () {
+            var loadUrl = this.options.actions.refreshDataAction;
+            if (!this.options.actions.refreshDataAction) {
+                loadUrl = this.options.actions.listAction;
+            }
+            loadUrl = this._addPagingInfoToUrl(loadUrl, this._currentPageNo);
+            return loadUrl;
         },
 
         _createJtParamsForLoading: function() {
@@ -625,10 +647,13 @@ function isNumberKey(evt){
         _addCellsToRowUsingRecord: function ($row) {
             var record = $row.data('record');
             for (var i = 0; i < this._columnList.length; i++) {
-                this._createCellForRecordField(record, this._columnList[i])
-                    .appendTo($row);
+                var td = this._createCellForRecordField(record, this._columnList[i]);
+                td.attr('data-field_name', this._columnList[i]);
+                td.appendTo($row);
             }
         },
+
+
 
         /* Create a cell for given field.
         *************************************************************************/
@@ -650,11 +675,15 @@ function isNumberKey(evt){
 
             $.each(records, function (index, record) {
                 $tr = self._createRowFromRecord(record);
-
+               
+               
                 self._addCellsToRefreshRecord($tr);
                 self._addRow($tr);
-
+               
+              
             });
+
+           
 
             self._refreshRowStyles();
         },
@@ -1422,6 +1451,7 @@ function isNumberKey(evt){
 
 }(jQuery));
 
+
 /************************************************************************
 * Some UTULITY methods used by jTable                                   *
 *************************************************************************/
@@ -1582,6 +1612,7 @@ function isNumberKey(evt){
 
 })(jQuery);
 
+
 /************************************************************************
 * FORMS extension for jTable (base for edit/create forms)               *
 *************************************************************************/
@@ -1661,8 +1692,6 @@ function isNumberKey(evt){
                 return this._createPasswordInputForField(field, fieldName, value);
             } else if (field.type == 'checkbox') {
                 return this._createCheckboxForField(field, fieldName, value);
-            } else if (field.type == 'number') {
-                return this._createOnlyNumberInputForField(field, fieldName, value);
             } else if (field.options) {
                 if (field.type == 'radiobutton') {
                     return this._createRadioButtonListForField(field, fieldName, value, record, formType);
@@ -1724,21 +1753,6 @@ function isNumberKey(evt){
                 .addClass('jtable-input jtable-text-input')
                 .append($input);
         },
-		
-		/* Creates a textbox for a field only number.
-        *************************************************************************/
-        _createOnlyNumberInputForField: function (field, fieldName, value) {
-            var $input = $('<input class="' + field.inputClass + '" id="Edit-' + fieldName 
-			+ '" type="text" name="' 
-			+ fieldName + '"  onkeypress=\'return isNumberKey(event)\'  ></input>');
-            if (value != undefined) {
-                $input.val(value);
-            }
-            
-            return $('<div />')
-                .addClass('jtable-input jtable-text-input')
-                .append($input);
-        },
 
         /* Creates a password input for a field.
         *************************************************************************/
@@ -1752,8 +1766,6 @@ function isNumberKey(evt){
                 .addClass('jtable-input jtable-password-input')
                 .append($input);
         },
-		
-		
 
         /* Creates a checkboxfor a field.
         *************************************************************************/
@@ -1870,6 +1882,7 @@ function isNumberKey(evt){
 
                 dependedValues[dependedField] = $dependsOn.val();
             }
+
 
             return dependedValues;
         },
@@ -2083,6 +2096,7 @@ function isNumberKey(evt){
     });
 
 })(jQuery);
+
 
 /************************************************************************
 * CREATE RECORD extension for jTable                                    *
@@ -2433,6 +2447,7 @@ function isNumberKey(evt){
 
 })(jQuery);
 
+
 /************************************************************************
 * EDIT RECORD extension for jTable                                      *
 *************************************************************************/
@@ -2478,6 +2493,7 @@ function isNumberKey(evt){
         *************************************************************************/
         _create: function () {
             base._create.apply(this, arguments);
+
 
             if (!this.options.actions.updateAction) {
                 return;
@@ -2545,6 +2561,8 @@ function isNumberKey(evt){
                 self._saveEditForm($editForm, $saveButton);
             }
         },
+
+
 
         /************************************************************************
 * PUBLIC METHODS                                                        *
@@ -2783,6 +2801,9 @@ function isNumberKey(evt){
             }
         },
 
+
+       
+
         /*  Overrides base method to add a 'refresh command cell' to a row.
                 *************************************************************************/
         _addCellsToRefreshRecord: function ($row) {
@@ -2804,6 +2825,7 @@ function isNumberKey(evt){
                     .appendTo($row);
             }
         },
+
 
         _RefreshRecordFromServer: function ($row) {
             var $self = this;
@@ -2831,7 +2853,10 @@ function isNumberKey(evt){
                       }
                   });
 
+
         },
+
+
 
         /************************************************************************
         * PRIVATE METHODS                                                       *
@@ -2935,6 +2960,7 @@ function isNumberKey(evt){
                 self._$editDiv.dialog("close");
             };
 
+
             //updateAction may be a function, check if it is
             if ($.isFunction(self.options.actions.updateAction)) {
 
@@ -3036,6 +3062,7 @@ function isNumberKey(evt){
     });
 
 })(jQuery);
+
 
 /************************************************************************
 * DELETION extension for jTable                                         *
@@ -3470,6 +3497,7 @@ function isNumberKey(evt){
 
 })(jQuery);
 
+
 /************************************************************************
 * SELECTING extension for jTable                                        *
 *************************************************************************/
@@ -3853,6 +3881,7 @@ function isNumberKey(evt){
 
 })(jQuery);
 
+
 /************************************************************************
 * PAGING extension for jTable                                           *
 *************************************************************************/
@@ -3880,8 +3909,8 @@ function isNumberKey(evt){
         options: {
             paging: false,
             pageList: 'normal', //possible values: 'minimal', 'normal'
-            pageSize: 15,
-            pageSizes: [10,15,20, 25,30,40, 50, 100, 250, 500],
+            pageSize: 10,
+            pageSizes: [10, 25, 50, 100, 250, 500],
             pageSizeChangeArea: true,
             gotoPageArea: 'combobox', //possible values: 'textbox', 'combobox', 'none'
 
@@ -3911,6 +3940,9 @@ function isNumberKey(evt){
 
         /* Overrides base method to do paging-specific constructions.
         *************************************************************************/
+
+
+
 
         _create: function() {
             base._create.apply(this, arguments);
@@ -4234,6 +4266,8 @@ function isNumberKey(evt){
             }
         },
 
+
+
         /* Overrides _onRecordsLoaded method to to do paging specific tasks.
         *************************************************************************/
         _onRecordsLoaded: function (data) {
@@ -4457,6 +4491,7 @@ function isNumberKey(evt){
     });
 
 })(jQuery);
+
 
 /************************************************************************
 * SORTING extension for jTable                                          *
@@ -5044,6 +5079,7 @@ function isNumberKey(evt){
             //Find data columns
             var headerCells = this._$table.find('>thead th.jtable-column-header');
 
+
             var pixelesFields = 0;
 
             headerCells.each(function () {
@@ -5055,6 +5091,8 @@ function isNumberKey(evt){
                     }
                 }
             });
+
+           
 
             //Calculate total width of data columns
             var totalWidthInPixel = 0;
@@ -5158,6 +5196,7 @@ function isNumberKey(evt){
 
 })(jQuery);
 
+
 /************************************************************************
 * MASTER/CHILD tables extension for jTable                              *
 *************************************************************************/
@@ -5213,14 +5252,8 @@ function isNumberKey(evt){
             self.closeChildTable($row, function () {
                 var $childRowColumn = self.getChildRow($row).children('td').empty();
                 var $childTableContainer = $('<div />')
-                    .addClass('jtable-child-table-container');
-
-                if (tableOptions.tableContainerClass) {
-                    $childTableContainer.addClass(tableOptions.tableContainerClass);
-                }
-
-
-                   $childTableContainer.appendTo($childRowColumn);
+                    .addClass('jtable-child-table-container')
+                    .appendTo($childRowColumn);
                 $childRowColumn.data('childTable', $childTableContainer);
                 $childTableContainer.jtable(tableOptions);
                 self.openChildRow($row);
