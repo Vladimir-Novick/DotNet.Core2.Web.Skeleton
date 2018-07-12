@@ -14,6 +14,14 @@ Table View:
   
   please look file: config > admin_users.json
   
+## Build as windows console application
+  
+		dotnet publish -c Release -o E:/STORE_EXEC/DotNet.Core2.Web.Skeleton -r win10-x64
+		
+## Build as Linux application
+
+ 
+		dotnet publish -c Release -r ubuntu.16.04-x64
 
 
 Copyright (C) 2017-2018 by Vladimir Novick http://www.linkedin.com/in/vladimirnovick , 
